@@ -3,18 +3,40 @@ const app = express();
 const bodyParser = require('body-parser');
 const axios = require('axios');
 const https = require('https');
+const NodeCache = require('node-cache');
 
 require('dotenv').config();
 
-app.use(bodyParser.urlencoded({extended:true}));
-
-// Set up middleware
+const cache = new NodeCache({ stdTTL: 300 });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  const key = req.originalUrl;
+  const cachedData = cache.get(key);
+  if (cachedData) {
+    const { data, provider, lastRefreshed } = cachedData;
+    const timeSinceLastRefresh = Math.floor((Date.now() - lastRefreshed) / 1000);
+    res.setHeader('X-Weather-Provider', provider);
+    res.setHeader('X-Last-Refreshed', `${timeSinceLastRefresh}s ago`);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(data);
+  } else {
+    res.sendResponse = res.send;
+    res.send = async (body) => {
+      // store response in cache
+      cache.set(key, {
+        data: body,
+        provider: 'OpenWeatherMap',
+        lastRefreshed: Date.now()
+      });
+      res.sendResponse(body);
+    };
+    next();
+  }
+});
 
-// Define your API endpoints here
-
+// Define API endpoints here
 app.use(express.json());
 
 app.get('/weather/current/:location', async (req, res) => {
