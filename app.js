@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const https = require('https');
 const NodeCache = require('node-cache');
+const auth = require('basic-auth');
 
 require('dotenv').config();
 
@@ -24,7 +25,6 @@ app.use((req, res, next) => {
   } else {
     res.sendResponse = res.send;
     res.send = async (body) => {
-      // store response in cache
       cache.set(key, {
         data: body,
         provider: 'OpenWeatherMap',
@@ -36,10 +36,38 @@ app.use((req, res, next) => {
   }
 });
 
+
+// User Authentication
+const validCredentials = {
+  username: "ajdin",
+  password: "123"
+};
+
+function checkCredentials(username, password) {
+  if (!validCredentials.username || !validCredentials.password) {
+    throw new Error('USERNAME or PASSWORD not set correctly');
+  }
+  return username === validCredentials.username && password === validCredentials.password;
+}
+
+const authMiddleware = (req, res, next) => {
+  const credentials = auth(req);
+  console.log(credentials);
+
+  if (!credentials || !checkCredentials(credentials.name, credentials.pass)) {
+    res.status(401).set('WWW-Authenticate', 'Basic realm="Authentication Required"').send('Unauthorized');
+  } else {
+    next();
+  }
+};
+
+
+
+
 // Define API endpoints here
 app.use(express.json());
 
-app.get('/weather/current/:location', async (req, res) => {
+app.get('/weather/current/:location', authMiddleware, async (req, res) => {
     const url= `https://api.openweathermap.org/data/2.5/weather?q=${req.params.location}&appid=${process.env.API_KEY}&units=metric`;
     try {
         const response = await axios.get(url);
@@ -55,7 +83,7 @@ app.get('/weather/current/:location', async (req, res) => {
     }
 });
 
-app.get('/weather/forecast/:location', async (req, res) => {
+app.get('/weather/forecast/:location', authMiddleware, async (req, res) => {
   const location = req.params.location;
   const hours = req.query.hours || 3;
 
@@ -74,7 +102,7 @@ app.get('/weather/forecast/:location', async (req, res) => {
     }
 });
 
-app.get('/weather/history/:location', async (req, res) => {
+app.get('/weather/history/:location', authMiddleware, async (req, res) => {
   const location = req.params.location;
   const date = req.query.date;
   const unixTime = Math.round(new Date(date).getTime() / 1000);
