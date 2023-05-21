@@ -13,6 +13,7 @@ This project is a RESTful API for a weather app. It allows users to retrieve cur
 - [Swagger Documentation](#swagger-documentation)
 - [Caching](#caching)
 - [API Authentication](#api-authentication)
+- [Getting Started](#getting-started)
 
 ## Endpoints
 
@@ -70,3 +71,14 @@ To improve performance, caching is implemented in this API.
 ## API Authentication
 
 To ensure only authorized users can access the API, authentication using basic authentication is implemented. Users and their passwords can be stored in files. This authentication mechanism secures the API from unauthorized access and protects user data.
+
+## Getting Started
+
+1. Clone the repository from https://github.com/ajdin0/weatherAPI.git
+2. Install the necessary packages.
+3. Set the environment variables (or use .env file provided):
+   - `API_KEY`: Obtain an API key from the OpenWeatherMap API provider.
+   - `USERNAME`: Set your username for API authentication.
+   - `PASSWORD`: Set your password for API authentication.
+4. Run the application.
+5. The API will be accessible at `http://localhost:3000`
