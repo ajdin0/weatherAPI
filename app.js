@@ -6,6 +6,12 @@ const https = require('https');
 const NodeCache = require('node-cache');
 const auth = require('basic-auth');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./openapi.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
 require('dotenv').config();
 
 const cache = new NodeCache({ stdTTL: 300 });
@@ -43,24 +49,24 @@ app.use((req, res, next) => {
 
 // User Authentication
 function checkCredentials(username, password) {
+  const expectedUsername = process.env.username;
+  const expectedPassword = process.env.password;
   if (!process.env.username || !process.env.password) {
     throw new Error('USERNAME or PASSWORD not set correctly');
   }
-  return username === process.env.username && password === process.env.password;
+  return username === expectedUsername && password === expectedPassword;
 }
 
 const authMiddleware = (req, res, next) => {
-  if (process.env.AUTHENTICATION == 'true') {
-    const credentials = auth(req);
-    logMessage('debug', 'Authentication Middleware - Checking credentials...');
+  const credentials = auth(req);
+  logMessage('debug', 'Authentication Middleware - Checking credentials...');
 
-    if (!credentials || !checkCredentials(credentials.name, credentials.pass)) {
-      logMessage('warn', 'Authentication failed');
-      res.status(401).set('WWW-Authenticate', 'Basic realm="Authentication Required"').send('Unauthorized');
-    } else {
-      logMessage('debug', 'Authentication successful');
-      next();
-    }
+  if (!credentials || !checkCredentials(credentials.name, credentials.pass)) {
+    logMessage('warn', 'Authentication failed');
+    res.status(401).set('WWW-Authenticate', 'Basic realm="Authentication Required"').send('Unauthorized');
+  } else {
+    logMessage('debug', 'Authentication successful');
+    next();
   }
 };
 

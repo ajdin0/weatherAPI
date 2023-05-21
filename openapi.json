@@ -1,0 +1,219 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Weather API",
+      "description": "This API provides weather information (current weather, forecast, and history) for chosen locations. Authentication is required to access API endpoints. The API uses OpenWeatherMap service for weather data.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000"
+      }
+    ],
+    "paths": {
+      "/weather/current/{location}": {
+        "get": {
+          "summary": "Get current weather",
+          "description": "Fetches the current weather for a specific location.",
+          "parameters": [
+            {
+              "name": "location",
+              "in": "path",
+              "required": true,
+              "description": "The location for which to retrieve the weather.",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WeatherResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid location",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/weather/forecast/{location}": {
+        "get": {
+          "summary": "Get weather forecast",
+          "description": "Fetches the weather forecast for a specific location and time.",
+          "parameters": [
+            {
+              "name": "location",
+              "in": "path",
+              "required": true,
+              "description": "The location for which to retrieve the weather.",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WeatherResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid location",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/weather/history/{location}": {
+        "get": {
+          "summary": "Get weather history",
+          "description": "Fetches the weather history for a specific location and time.",
+          "parameters": [
+            {
+              "name": "location",
+              "in": "path",
+              "required": true,
+              "description": "The location for which to retrieve the weather.",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/WeatherResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid location",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ErrorResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "WeatherResponse": {
+          "type": "object",
+          "properties": {
+            "temperature": {
+              "type": "number"
+            },
+            "humidity": {
+              "type": "number"
+            },
+            "wind_speed": {
+              "type": "number"
+            }
+          }
+        },
+        "ErrorResponse": {
+          "type": "object",
+          "properties": {
+            "error_message": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  
